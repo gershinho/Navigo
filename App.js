@@ -1,54 +1,21 @@
-import React, { useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native';
-import * as Speech from 'expo-speech';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native'; 
+import { createStackNavigator } from '@react-navigation/stack'; // a stack is like a pile of cards, where each card representes a screen(push = naviagte forward, pop = go bakcwards through the strack)
+import HomeScreen from './screens/HomeScreen';
+import SettingsScreen from './screens/SettingsScreen';
+
+const Stack = createStackNavigator(); // 'stack of screens/cards'
 
 export default function App() {
-  const [text, setText] = useState('');
-
-  const speak = () => {
-    if (text.trim()) {
-      Speech.speak(text, {
-        language: 'en-US', // You can change this to support other languages
-      });
-    } else {
-      alert('Please enter some text to speak!');
-    }
-  };
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Text to Speech Example</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Type something..."
-        value={text}
-        onChangeText={setText}
-      />
-      <Button title="Speak" onPress={speak} />
-      <StatusBar style="auto" />
-    </View>
+  return ( 
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home"> 
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 20,
-    marginBottom: 20,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    width: '100%',
-    padding: 10,
-    marginBottom: 20,
-    borderRadius: 5,
-  },
-});
+// set homescreen as first screen seen
+// stack screen = defining each screen
