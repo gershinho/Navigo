@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import Geolocation from '../flightinfo/geolocation'
+import { useNavigation } from '@react-navigation/native';
 
 const SimpleForm = () => {
   const [formData, setFormData] = useState({ //formData holds form data, setFormData updates formData
@@ -8,6 +8,8 @@ const SimpleForm = () => {
     airport: '', // initial states of all data
     gateNumber: '',
   });
+
+  const navigation = useNavigation();
 
   const handleChange = (field, value) => { // field = name of input(name, airport, gatenum), value = val entered
     console.log(`Updating ${field} with value: ${value}`);   
@@ -20,7 +22,8 @@ const SimpleForm = () => {
   const handleSubmit = () => {
     console.log('Form submitted:', formData);
     Alert.alert('Form Submitted', `Name: ${formData.name}\nAirport: ${formData.airport}\nGate Number: ${formData.gateNumber}`);
-   
+    
+    navigation.navigate('Location');
   };
 
   return (
@@ -54,9 +57,7 @@ const SimpleForm = () => {
       <View style={styles.buttonContainer}>
         <Button title="Submit" onPress={handleSubmit} color="#4CAF50" />
       </View>
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>{JSON.stringify(this.state.location)}</Text>
-      </View>
+     
     </View>
       
 

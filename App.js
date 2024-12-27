@@ -2,16 +2,22 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native'; 
 import { createStackNavigator } from '@react-navigation/stack'; // a stack is like a pile of cards, where each card representes a screen(push = naviagte forward, pop = go bakcwards through the strack)
 import HomeScreen from './screens/HomeScreen';
-import SettingsScreen from './screens/SettingsScreen';
+import LocationScreen from './screens/location';
+import locategeo from './flightinfo/google_maps'
 
 const Stack = createStackNavigator(); // 'stack of screens/cards'
 
 export default function App() {
+
+  // useEffect(() => {
+
+  // }, []);
+
   return ( 
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home"> 
+      <Stack.Navigator > 
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Settings" component={SettingsScreen} />
+        <Stack.Screen name="Location" component={LocationScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -19,3 +25,4 @@ export default function App() {
 
 // set homescreen as first screen seen
 // stack screen = defining each screen
+

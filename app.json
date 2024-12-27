@@ -1,0 +1,15 @@
+{
+    "expo": {
+      "name": "Navigo",
+      "slug": "Navigo",
+      "android": {
+        "config": {
+          "googleMaps": {
+            "apiKey": "AIzaSyDaTHaEQ1jwYb-FZSwk-NVJgP9c0PzjS7E"
+          }
+        }
+      }
+      
+    }
+  }
+  
