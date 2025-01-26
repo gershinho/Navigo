@@ -2,17 +2,18 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
+
 const SimpleForm = () => {
   const [formData, setFormData] = useState({ //formData holds form data, setFormData updates formData
-    name: '',
-    airport: '', // initial states of all data
+    terminal: '',
+    airline: '', // initial states of all data
     gateNumber: '',
   });
 
   const navigation = useNavigation();
 
   const handleChange = (field, value) => { // field = name of input(name, airport, gatenum), value = val entered
-    console.log(`Updating ${field} with value: ${value}`);   
+  
     setFormData(prevData => ({ //update form in specific field
       ...prevData,
       [field]: value,
@@ -21,28 +22,45 @@ const SimpleForm = () => {
 
   const handleSubmit = () => {
     console.log('Form submitted:', formData);
-    Alert.alert('Form Submitted', `Name: ${formData.name}\nAirport: ${formData.airport}\nGate Number: ${formData.gateNumber}`);
-    
-    navigation.navigate('Location');
+  
+    // Extract the terminal from the form data
+    const { terminal } = formData;
+    console.log(terminal);
+  
+    const DIRECTIONS_URL = `http://10.0.0.181:5000/directions?terminal=${encodeURIComponent(terminal)}`;
+
+    fetch(DIRECTIONS_URL)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Server error: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+          navigation.navigate("API", { directionsData: data});
+      })
+      .catch(error => {
+        console.error("Error fetching directions:", error);
+      });
   };
 
   return (
 
     <View style={styles.container}>
-      <Text style={styles.label}>Name:</Text>
+      <Text style={styles.label}>Terminal:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter your name"
-        value={formData.name}
-        onChangeText={value => handleChange('name', value)}
+        placeholder="Enter terminal"
+        value={formData.terminal}
+        onChangeText={value => handleChange('terminal', value)}
       />
 
-      <Text style={styles.label}>Airport:</Text>
+      <Text style={styles.label}>Airline:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter airport name"
+        placeholder="Enter airline"
         value={formData.airport}
-        onChangeText={value => handleChange('airport', value)}
+        onChangeText={value => handleChange('airline', value)}
       />
 
       <Text style={styles.label}>Gate Number:</Text>
