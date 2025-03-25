@@ -52,56 +52,7 @@ def get_location():
             "error": str(e)
         }), 500
     
-#ADD THESE PARAMETERS LATER: mode -> walking, language -> choose based on user
-@app.route('/directions', methods = ['GET'])
-def get_terminal_directions():
 
-    if request.method == 'GET':
-        print(f"Request args: {request.args}")
-        terminal = request.args.get('terminal')
-        if not terminal:
-            return jsonify({"error": "Missing 'terminal' query parameter"}), 400
-
-
-        _, location_data = get_location()
-
-        #latitude = data['location']['lat']
-        #longitude = data['location']['lng']
-    
-        latitude = 41.97750594826151
-        longitude = -87.9055705049776
-        destination = "Terminal:" + terminal +  "O'Hare International Airport"
-        DIRECTIONS_URL = f'https://maps.googleapis.com/maps/api/directions/json?destination={destination}&origin={latitude},{longitude}&mode=car&key=AIzaSyDaTHaEQ1jwYb-FZSwk-NVJgP9c0PzjS7E'
-        try:
-            headers = {
-                'Content-Type': 'application/json' 
-            }
-            
-            
-            response = requests.get(  
-                DIRECTIONS_URL,
-                headers=headers,
-            )
-            if response.status_code == 200: 
-                data = response.json()
-                steps = data['routes'][0]['legs'][0]['steps']
-                print(steps[0])
-                return data
-
-                
-            
-            else: 
-                error_message = response.json().get('error', {}).get('message', 'Unknown error')
-                return jsonify({
-                    "error": f"Google Directions API error: {error_message}"
-                }), response.status_code
-            
-        except Exception as e: 
-            return jsonify({
-                "error": str(e)
-            }), 500
-        
-    
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
