@@ -51,7 +51,68 @@ def get_location():
         return jsonify({
             "error": str(e)
         }), 500
+
+
+
+
+
+
+
+
+def extract_flight_info(flight):
+    ident = flight.get("ident", "N/A")
+    # Use gate_destination if available, otherwise gate_origin
+    gate = flight.get("gate_destination") or flight.get("gate_origin") or "N/A"
+    # Use terminal_destination if available, otherwise terminal_origin
+    terminal = flight.get("terminal_destination") or flight.get("terminal_origin") or "N/A"
+    return ident, gate, terminal
+def extract_ident_info(flight):
+    ident = flight.get("ident", "N/A")
+    # Use gate_destination if available, otherwise gate_origin
+    gate = flight.get("gate_destination") or flight.get("gate_origin") or "N/A"
+    # Use terminal_destination if available, otherwise terminal_origin
+    terminal = flight.get("terminal_destination") or flight.get("terminal_origin") or "N/A"
+    return ident, gate, terminal
+
+@app.route('/get_flightData', methods=['GET', 'POST'])
+
+def flightInfo():
+    user_flight = request.get_json()
+    API_KEY = "CnertNS6srqp8NjSiBW59mpgvWJ1t6Zb"
+    AIRPORT = user_flight.get('airport')
+    DEPARTURE = user_flight.get('departure')
+    start_time = f"{DEPARTURE}T00:00:00Z"
+    end_time = f"{DEPARTURE}T23:59:59Z"
+
     
+    
+    ident = user_flight.get('ident')
+    
+    url = f"https://aeroapi.flightaware.com/aeroapi/airports/{AIRPORT}/flights?type=departures&start={start_time}&end={end_time}"
+    headers = {"x-apikey": API_KEY}
+    response = requests.get(url, headers=headers)
+    data = response.json()
+
+
+    categories = [ "departures","scheduled_departures"]
+
+    # Loop through each category and print the flight info if available
+    for category in categories:
+        flights = data.get(category, [])
+        if flights:  # Only print if there are flights in this category
+            print(f"\n--- {category.upper()} ---")
+            for flight in flights:
+                ident, gate, terminal = extract_flight_info(flight)
+                if ident == user_flight.get('ident'):
+                    print(f"✅ Match found for flight {ident}")
+                    print(f"Gate: {gate}")
+                    print(f"Terminal: {terminal}")
+               
+
+
+    return jsonify({'message': 'nice'})
+
+   
 
 
 if __name__ == '__main__':

@@ -1,14 +1,27 @@
-// Display.js
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
-import useLocategeo from '../flightinfo/geolocate'; 
+import axios from 'axios';
 
-const Display = ({ route }) => {
-  const { directionsData} = route.params ?? {}; //route.params holds data passed when you navigate to this screen
+const useLocategeo = () => {
+  const [location, setLocation] = useState(null);
+
+  const getLocation = async () => {
+    try {
+      const response = await axios.get('http://10.0.0.135:5000/get_location');
+      setLocation(response.data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  return { location, getLocation };
+};
+
+// Display component that uses the custom hook to show location on screen
+const Display = () => {
   const { location, getLocation } = useLocategeo();
 
   useEffect(() => {
-
     getLocation();
   }, []);
 
@@ -17,9 +30,6 @@ const Display = ({ route }) => {
       <Text>
         Your location:{' '}
         {location ? `${location.latitude}, ${location.longitude}` : 'Loading...'}
-      </Text>
-      <Text>
-        Directions: {directionsData ? JSON.stringify(directionsData) : 'No directions data'}
       </Text>
     </View>
   );

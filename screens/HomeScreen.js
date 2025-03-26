@@ -5,70 +5,67 @@ import { useNavigation } from '@react-navigation/native';
 
 const SimpleForm = () => {
   const [formData, setFormData] = useState({ //formData holds form data, setFormData updates formData
-    terminal: '',
-    airline: '', // initial states of all data
-    gateNumber: '',
+    departure: '2025-03-25',
+    airport: 'ORD', // initial states of all data
+    ident: 'SKW5257',
   });
 
   const navigation = useNavigation();
 
   const handleChange = (field, value) => { // field = name of input(name, airport, gatenum), value = val entered
   
-    setFormData(prevData => ({ //update form in specific field
+    setFormData(prevData => ({ 
       ...prevData,
       [field]: value,
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log('Form submitted:', formData);
-  
-    // Extract the terminal from the form data
-    const { terminal } = formData;
-    console.log(terminal);
-  
-    const DIRECTIONS_URL = `http://10.0.0.181:5000/directions?terminal=${encodeURIComponent(terminal)}`;
-
-    fetch(DIRECTIONS_URL)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`Server error: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-          navigation.navigate("API", { directionsData: data});
-      })
-      .catch(error => {
-        console.error("Error fetching directions:", error);
+    try {
+      const response = await fetch('http://10.0.0.135:5000/get_flightData', {
+        method: 'POST',
+        headers: {
+          
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
+      const result = await response.json();
+      console.log('Server response:', result);
+      navigation.navigate('API');
+    
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
+      
   };
 
   return (
 
     <View style={styles.container}>
-      <Text style={styles.label}>Terminal:</Text>
+      <Text style={styles.label}>departure:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter terminal"
-        value={formData.terminal}
-        onChangeText={value => handleChange('terminal', value)}
+        placeholder="Enter departure"
+        value={formData.departure}
+        onChangeText={value => handleChange('departure', value)}
       />
 
-      <Text style={styles.label}>Airline:</Text>
+      <Text style={styles.label}>airport:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter airline"
+        placeholder="Enter airport"
         value={formData.airport}
-        onChangeText={value => handleChange('airline', value)}
+        onChangeText={value => handleChange('airport', value)}
       />
 
-      <Text style={styles.label}>Gate Number:</Text>
+      <Text style={styles.label}>ident Number:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter gate number"
-        value={formData.gateNumber}
-        onChangeText={value => handleChange('gateNumber', value)}
+        placeholder="Enter ident"
+        value={formData.ident}
+        onChangeText={value => handleChange('ident', value)}
        
       />
 
