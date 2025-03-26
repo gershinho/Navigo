@@ -10,9 +10,9 @@
   },
   "devDependencies": {
     "typescript": "~5.7.2",
-    "vite": "^6.1.0"
+    "vite": "^6.2.0"
   },
   "dependencies": {
-    "@mappedin/mappedin-js": "^6.0.1-beta.28"
+    "@mappedin/mappedin-js": "^6.0.1-beta.36"
   }
 }

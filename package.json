@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "dev": "expo start"
+  },
   "dependencies": {
     "@mappedin/mappedin-js": "^5.46.0",
     "@react-native-community/geolocation": "^3.4.0",
