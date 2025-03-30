@@ -94,3 +94,7 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+.small-label {
+  font-size: 10px; /* Adjust this value as needed */
+  /* You can add additional styling (color, background, etc.) here */
+}
