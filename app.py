@@ -62,17 +62,11 @@ def get_location():
 def extract_flight_info(flight):
     ident = flight.get("ident", "N/A")
     # Use gate_destination if available, otherwise gate_origin
-    gate = flight.get("gate_destination") or flight.get("gate_origin") or "N/A"
+    gate = flight.get("gate_origin") or flight.get("gate_destination") or "N/A"
     # Use terminal_destination if available, otherwise terminal_origin
-    terminal = flight.get("terminal_destination") or flight.get("terminal_origin") or "N/A"
+    terminal = flight.get("terminal_origin") or flight.get("terminal_destination") or "N/A"
     return ident, gate, terminal
-def extract_ident_info(flight):
-    ident = flight.get("ident", "N/A")
-    # Use gate_destination if available, otherwise gate_origin
-    gate = flight.get("gate_destination") or flight.get("gate_origin") or "N/A"
-    # Use terminal_destination if available, otherwise terminal_origin
-    terminal = flight.get("terminal_destination") or flight.get("terminal_origin") or "N/A"
-    return ident, gate, terminal
+
 
 @app.route('/get_flightData', methods=['GET', 'POST'])
 
@@ -103,14 +97,21 @@ def flightInfo():
             print(f"\n--- {category.upper()} ---")
             for flight in flights:
                 ident, gate, terminal = extract_flight_info(flight)
+                #print(ident)
                 if ident == user_flight.get('ident'):
                     print(f"✅ Match found for flight {ident}")
                     print(f"Gate: {gate}")
                     print(f"Terminal: {terminal}")
-               
+                    return jsonify({'gate': gate,
+                            'terminal': terminal})
+
+    return jsonify({
+        'error': f"No matching flight found for ident: {ident}"
+    }), 404
+                
 
 
-    return jsonify({'message': 'nice'})
+   
 
    
 

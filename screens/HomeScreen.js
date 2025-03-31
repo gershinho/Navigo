@@ -5,9 +5,9 @@ import { useNavigation } from '@react-navigation/native';
 
 const SimpleForm = () => {
   const [formData, setFormData] = useState({ //formData holds form data, setFormData updates formData
-    departure: '2025-03-25',
+    departure: '2025-03-29',
     airport: 'ORD', // initial states of all data
-    ident: 'SKW5257',
+    ident: 'SKW5999',
   });
 
   const navigation = useNavigation();
@@ -23,7 +23,7 @@ const SimpleForm = () => {
   const handleSubmit = async () => {
     console.log('Form submitted:', formData);
     try {
-      const response = await fetch('http://10.0.0.135:5000/get_flightData', {
+      const response = await fetch('http://10.0.0.56:5000/get_flightData', {
         method: 'POST',
         headers: {
           
@@ -33,7 +33,7 @@ const SimpleForm = () => {
       });
       const result = await response.json();
       console.log('Server response:', result);
-      navigation.navigate('API');
+      navigation.navigate('Map', formData);
     
     } catch (error) {
       console.error('Error submitting form:', error);
