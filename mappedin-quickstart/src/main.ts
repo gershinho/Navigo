@@ -113,8 +113,8 @@ async function init() {
 
   // Draw path: gate → terminal only
   const directions = mapData.getDirections(
-    gateDestination as TNavigationTarget,
-    terminalDestination as TNavigationTarget
+    terminalDestination as TNavigationTarget,
+    gateDestination as TNavigationTarget
   );
   if (directions && directions.path.length) {
     mapView.Navigation.draw(directions, {
