@@ -48,8 +48,16 @@ import {
     };
   }
   
-  // Fetch flight info (gate and terminal) from the backend
+  // Cache for flight info to prevent re-fetching
+  let cachedFlightInfo: { gate: string; terminal: string } | null = null;
+  
+  // Fetch flight info (gate and terminal) from the backend (with caching)
   async function getFlightInfo() {
+    if (cachedFlightInfo) {
+      logToScreen("Using cached flight info");
+      return cachedFlightInfo;
+    }
+    
     const { airport, departure, ident } = getQueryParameters();
     logToScreen(`Using query params: airport=${airport}, departure=${departure}, ident=${ident}`);
     
@@ -60,12 +68,15 @@ import {
     });
     const data = await res.json();
     logToScreen(`Fetched flight info: gate=${data.gate}, terminal=${data.terminal}`);
-    return { gate: data.gate, terminal: data.terminal };
+    
+    cachedFlightInfo = { gate: data.gate, terminal: data.terminal };
+    return cachedFlightInfo;
   }
   
   async function init() {
     const { gate, terminal } = await getFlightInfo();
   
+    // Get map data (you could cache this similarly if needed)
     const mapData: MapData = await getMapData(options);
     const mapView: MapView = await show3dMap(
       document.getElementById('mappedin-map') as HTMLDivElement,
@@ -127,7 +138,7 @@ import {
       return;
     }
   
-    // Create multi-segment directions: Terminal -> Security -> Gate
+    // Get multi-segment directions: Terminal -> Security -> Gate
     const multiSegmentDirections = mapData.getDirectionsMultiDestination(
       terminalDestination as TNavigationTarget,
       [securityDestination as TNavigationTarget, gateDestination as TNavigationTarget]
@@ -136,16 +147,38 @@ import {
     logToScreen(`Multi-segment directions found: ${multiSegmentDirections.length} segment(s)`);
   
     if (multiSegmentDirections && multiSegmentDirections.length > 0) {
-      // Draw all segments at once – this ensures the entire path is rendered as a single route.
-      mapView.Navigation.draw(multiSegmentDirections, {
-        pathOptions: { nearRadius: 1, farRadius: 1 },
+      // For each segment, add its path and turn-by-turn markers.
+      multiSegmentDirections.forEach((segment, segmentIndex) => {
+        // Draw the leg's path using the coordinates from the segment.
+        mapView.Paths.add(segment.coordinates, {
+          pathOptions: { nearRadius: 1, farRadius: 1 }
+        });
+        logToScreen(`✅ Path for segment ${segmentIndex + 1} added`);
+  
+        // Add a marker for each turn-by-turn instruction.
+        if (segment.instructions && segment.instructions.length > 0) {
+          segment.instructions.forEach((instruction: any) => {
+            const markerTemplate = `
+              <div class="marker">
+                <p>${instruction.action.type} ${instruction.action.bearing ?? ''} in ${Math.round(instruction.distance)} meters.</p>
+              </div>`;
+            mapView.Markers.add(instruction.coordinate, markerTemplate, { rank: 4 });
+          });
+          logToScreen(`✅ Markers for segment ${segmentIndex + 1} instructions added`);
+        }
       });
-      logToScreen("✅ Multi-segment directions drawn");
+  
+      // Optionally, re-add the terminal label to keep it visible.
+      mapView.Labels.add(terminalDestination, terminalDestination.name, {
+        className: 'small-label',
+        forceDisplay: true 
+      });
+      logToScreen("✅ Terminal label re-added");
     } else {
-      logToScreen("⚠️ No multi-segment directions found to draw");
+      logToScreen("⚠️ No multi-segment directions found to display");
     }
   
-    // Optional: click-to-navigate example
+    // Optional: click-to-navigate example.
     mapView.on('click', async (event) => {
       const clickedLocation = event.coordinate;
       let destination = mapData.getByType('space').find(
@@ -156,8 +189,17 @@ import {
       if (destination) {
         const clickDirections = mapData.getDirections(clickedLocation, destination);
         if (clickDirections) {
-          mapView.Navigation.draw(clickDirections, {
+          // For simplicity, draw the clicked navigation path.
+          mapView.Paths.add(clickDirections.coordinates, {
             pathOptions: { nearRadius: 1, farRadius: 1 }
+          });
+          // Optionally add markers for the click directions.
+          clickDirections.instructions.forEach((instruction: any) => {
+            const markerTemplate = `
+              <div class="marker">
+                <p>${instruction.action.type} ${instruction.action.bearing ?? ''} in ${Math.round(instruction.distance)} meters.</p>
+              </div>`;
+            mapView.Markers.add(instruction.coordinate, markerTemplate, { rank: 4 });
           });
           logToScreen("✅ Click navigation drawn to G gate");
         }
