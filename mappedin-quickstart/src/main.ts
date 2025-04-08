@@ -9,44 +9,75 @@ const options: TGetMapDataOptions = {
 };
 
 async function init() {
-  const mapData: MapData = await getMapData(options);
-  const mapView: MapView = await show3dMap(
-    document.getElementById('mappedin-map') as HTMLDivElement,
+  const mapData = await getMapData(options);
+  const mapView = await show3dMap(
+    document.getElementById('mappedin-map'),
     mapData
   );
 
-  // Define the object types you want to label, including shapes.
-  const labelableTypes = [
-    'space',
-    'point-of-interest',
-    'enterprise-location',
-    'area',
-    'shape'
-  ];
+  // New color assignments
+  const t2Color = '#fae8ca'; // Light pastel color for T2
+  const checkpointColor = '#ffda99'; // Soft yellow for security checkpoints
+  const gateColor = '#ffe4b5'; // Light yellow for gates
+  const gateRoomColor = '#ffd699'; // Slightly darker yellow for rooms inside gates
+  const lightGrey = '#f0f0f0'; // Light grey for non-named spaces
 
-  // Loop through each type and add labels.
+  // Custom color assignments for key named spaces
+  const spaceColorOverrides: Record<string, string> = {
+    'T2': t2Color,
+    'E Gate': gateColor,
+    'F Gate': gateColor,
+    'G Gate': gateColor,
+    'Security Checkpoint': checkpointColor,
+  };
+
+  // Assign colors to spaces, with darker shades for rooms inside gates
+  const allSpaces = mapData.getByType('space');
+  allSpaces.forEach((space) => {
+    let color = spaceColorOverrides[space.name] || lightGrey; // Default to light grey for non-named spaces
+    if (['E Gate', 'F Gate', 'G Gate'].includes(space.name)) {
+      // Darker shade for rooms inside gates (only for rooms under "E Gate", "F Gate", "G Gate")
+      mapView.updateState(space, {
+        color: gateRoomColor,
+        hoverColor: gateRoomColor,
+        interactive: true,
+      });
+    } else {
+      mapView.updateState(space, {
+        color: color,
+        hoverColor: color,
+        interactive: true,
+      });
+    }
+  });
+
+  // Labels
+  const labelableTypes = ['space', 'point-of-interest', 'enterprise-location', 'area', 'shape'];
   labelableTypes.forEach(type => {
     const items = mapData.getByType(type);
     items.forEach(item => {
-      // Use a custom label if available; fallback to the object's name.
-      const labelText = (item as any).label || item.name;
+      const labelText = item.label || item.name;
       if (labelText) {
-        // For shapes, add a custom CSS class for smaller labels.
-        if (type === 'shape') {
-          mapView.Labels.add(item, labelText, { className: 'small-label' });
-        } else {
-          mapView.Labels.add(item, labelText);
-        }
+        const labelOptions = {
+          className: type === 'shape' ? 'small-label' : 'default-label',
+          style: {
+            color: '#C56B2E',
+            fontWeight: 'bold',
+            fontSize: '16px',
+          },
+          options: { interactive: true },
+        };
+        mapView.Labels.add(item, labelText, labelOptions);
       }
     });
   });
 
-  // Optional: click event for navigation example.
+  // Click navigation to "G Gate"
   mapView.on('click', async (event) => {
     const clickedLocation = event.coordinate;
-    let destination = mapData.getByType('space').find((s) => s.name === 'G gate');
+    let destination = mapData.getByType('space').find(s => s.name === 'G Gate');
     if (!destination) {
-      destination = mapData.getByType('point-of-interest').find((p) => p.name === 'G gate');
+      destination = mapData.getByType('point-of-interest').find(p => p.name === 'G Gate');
     }
     if (destination) {
       const directions = mapData.getDirections(clickedLocation, destination);
@@ -55,6 +86,8 @@ async function init() {
           pathOptions: {
             nearRadius: 1,
             farRadius: 1,
+            pathColor: '#D87E3B', // Warm color for the path
+            pathWidth: 5,
           },
         });
       }

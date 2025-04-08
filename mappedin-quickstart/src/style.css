@@ -94,7 +94,41 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Updated label styling */
+.default-label {
+  font-size: 16px !important;
+  font-weight: bold !important;
+  color: #C56B2E !important; /* Warm label color */
+}
+
 .small-label {
-  font-size: 10px; /* Adjust this value as needed */
-  /* You can add additional styling (color, background, etc.) here */
+  font-size: 14px !important;
+  font-weight: normal !important;
+  color: #D87E3B !important; /* Orange color for smaller labels */
+}
+
+/* Custom hover effect for map points */
+.map-point:hover {
+  background-color: #F8C999 !important; /* Highlight on hover */
+  transition: background-color 0.3s ease;
+}
+
+/* Global map container styles */
+#mappedin-map {
+  background-color: #FCE2C8 !important; /* Soft peach color */
+  border-radius: 15px !important; /* Rounded corners */
+  width: 100%;
+  height: 100%;
+}
+
+/* Navigation Path styling */
+.map-path {
+  stroke: #D87E3B !important; /* Vibrant orange for path */
+  stroke-width: 5px;
+  transition: stroke-width 0.3s ease;
+}
+
+.map-path:hover {
+  stroke-width: 8px; /* Thicker path on hover */
 }
