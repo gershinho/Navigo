@@ -97,7 +97,7 @@ def flightInfo():
             print(f"\n--- {category.upper()} ---")
             for flight in flights:
                 ident, gate, terminal = extract_flight_info(flight)
-                #print(ident)
+                print(ident)
                 if ident == user_flight.get('ident'):
                     print(f"✅ Match found for flight {ident}")
                     print(f"Gate: {gate}")

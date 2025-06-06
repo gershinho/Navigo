@@ -1,4 +1,4 @@
-#!/Users/gersh/Desktop/Navigo-1/venv/bin/python3.13
+#!/Users/gersh/Desktop/Navigo/venv/bin/python3.13
 # -*- coding: utf-8 -*-
 import re
 import sys

@@ -98,7 +98,7 @@ const SimpleForm = () => {
   const handleSubmit = async () => {
     console.log('Form submitted:', formData);
     try {
-      const response = await fetch('http://10.0.0.56:5000/get_flightData', {
+      const response = await fetch('http://10.0.0.171:5000/get_flightData', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
