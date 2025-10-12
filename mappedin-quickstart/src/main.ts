@@ -173,7 +173,7 @@ async function getFlightInfo() {
   
   const { airport, departure, ident } = getQueryParameters();
   
-  const res = await fetch('http://10.0.0.171:5000/get_flightData', {
+  const res = await fetch('http://10.0.0.222:5000/get_flightData', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ airport, departure, ident })

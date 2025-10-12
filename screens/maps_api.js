@@ -7,7 +7,7 @@ const useLocategeo = () => {
 
   const getLocation = async () => {
     try {
-      const response = await axios.get('http://10.0.0.56:5000/get_location');
+      const response = await axios.get('http://10.0.0.222:5000/get_location');
       setLocation(response.data);
     } catch (error) {
       console.error('Error:', error);

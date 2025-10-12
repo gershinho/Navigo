@@ -7,7 +7,7 @@ const MapScreen = ({ route }) => {
   const { airport, departure, ident } = route.params;
 
   // Build the URL with query parameters
-  const mapUrl = `http://10.0.0.171:5173/?airport=${encodeURIComponent(airport)}&departure=${encodeURIComponent(departure)}&ident=${encodeURIComponent(ident)}`;
+  const mapUrl = `http://10.0.0.222:5173/?airport=${encodeURIComponent(airport)}&departure=${encodeURIComponent(departure)}&ident=${encodeURIComponent(ident)}`;
 
   return (
     <View style={styles.container}>
